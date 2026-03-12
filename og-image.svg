@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1020"/>
+      <stop offset="50%" stop-color="#0a0806"/>
+      <stop offset="100%" stop-color="#1a0808"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffe4a0"/>
+      <stop offset="100%" stop-color="#c4a35a"/>
+    </linearGradient>
+    <linearGradient id="fire" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff6a4a"/>
+      <stop offset="100%" stop-color="#aa2a0a"/>
+    </linearGradient>
+    <linearGradient id="divine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffe4a0" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="transparent" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="infernal" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0%" stop-color="#ff2a0a" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="transparent" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="0" y="0" width="600" height="630" fill="url(#divine)"/>
+  <rect x="600" y="0" width="600" height="630" fill="url(#infernal)"/>
+
+  <!-- Border -->
+  <rect x="8" y="8" width="1184" height="614" rx="4" fill="none" stroke="#c4a35a" stroke-width="3"/>
+  <rect x="16" y="16" width="1168" height="598" rx="2" fill="none" stroke="#c4a35a" stroke-width="1" opacity="0.3"/>
+
+  <!-- Columns left -->
+  <rect x="24" y="24" width="12" height="582" fill="#c4a35a" opacity="0.08"/>
+  <line x1="28" y1="24" x2="28" y2="606" stroke="#c4a35a" stroke-width="1" opacity="0.15"/>
+  <line x1="32" y1="24" x2="32" y2="606" stroke="#c4a35a" stroke-width="1" opacity="0.1"/>
+
+  <!-- Columns right -->
+  <rect x="1164" y="24" width="12" height="582" fill="#c4a35a" opacity="0.08"/>
+  <line x1="1168" y1="24" x2="1168" y2="606" stroke="#c4a35a" stroke-width="1" opacity="0.15"/>
+  <line x1="1172" y1="24" x2="1172" y2="606" stroke="#c4a35a" stroke-width="1" opacity="0.1"/>
+
+  <!-- Divine symbol -->
+  <text x="300" y="200" text-anchor="middle" font-size="80" fill="#ffe4a0" opacity="0.2">☀</text>
+
+  <!-- Infernal symbol -->
+  <text x="900" y="200" text-anchor="middle" font-size="80" fill="#ff4a2a" opacity="0.2">☠</text>
+
+  <!-- Main title -->
+  <text x="600" y="240" text-anchor="middle" font-family="Georgia, serif" font-weight="bold" font-size="72" fill="url(#gold)" letter-spacing="8">
+    ⚡ OLYMPUS SYNTH ⚡
+  </text>
+
+  <!-- Subtitle -->
+  <text x="600" y="290" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#8a7a5a" letter-spacing="12">
+    DIVINE SOUND FORGE
+  </text>
+
+  <!-- Divider line -->
+  <line x1="350" y1="320" x2="850" y2="320" stroke="#c4a35a" stroke-width="1" opacity="0.4"/>
+
+  <!-- Description -->
+  <text x="600" y="365" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#c4b48a" opacity="0.8">
+    49-Key Web Synthesizer
+  </text>
+  <text x="600" y="400" text-anchor="middle" font-family="Georgia, serif" font-size="18" fill="#9a8a6a" opacity="0.6">
+    Oscillator · Filter · Envelopes · LFO · Reverb · Delay
+  </text>
+
+  <!-- Mini keyboard hint -->
+  <g transform="translate(350, 440)">
+    <!-- White keys -->
+    <rect x="0" y="0" width="38" height="100" rx="2" fill="#e8e0d0" stroke="#b0a890" stroke-width="1"/>
+    <rect x="42" y="0" width="38" height="100" rx="2" fill="#e8e0d0" stroke="#b0a890" stroke-width="1"/>
+    <rect x="84" y="0" width="38" height="100" rx="2" fill="#e8e0d0" stroke="#b0a890" stroke-width="1"/>
+    <rect x="126" y="0" width="38" height="100" rx="2" fill="#e8e0d0" stroke="#b0a890" stroke-width="1"/>
+    <rect x="168" y="0" width="38" height="100" rx="2" fill="#e8e0d0" stroke="#b0a890" stroke-width="1"/>
+    <rect x="210" y="0" width="38" height="100" rx="2" fill="#e8e0d0" stroke="#b0a890" stroke-width="1"/>
+    <rect x="252" y="0" width="38" height="100" rx="2" fill="#e8e0d0" stroke="#b0a890" stroke-width="1"/>
+    <rect x="294" y="0" width="38" height="100" rx="2" fill="#ffe8a0" stroke="#c4a35a" stroke-width="1"/>
+    <rect x="336" y="0" width="38" height="100" rx="2" fill="#e8e0d0" stroke="#b0a890" stroke-width="1"/>
+    <rect x="378" y="0" width="38" height="100" rx="2" fill="#e8e0d0" stroke="#b0a890" stroke-width="1"/>
+    <rect x="420" y="0" width="38" height="100" rx="2" fill="#e8e0d0" stroke="#b0a890" stroke-width="1"/>
+    <rect x="462" y="0" width="38" height="100" rx="2" fill="#e8e0d0" stroke="#b0a890" stroke-width="1"/>
+    <!-- Black keys -->
+    <rect x="28" y="0" width="24" height="60" rx="2" fill="#1a1a1a" stroke="#000" stroke-width="1"/>
+    <rect x="70" y="0" width="24" height="60" rx="2" fill="#1a1a1a" stroke="#000" stroke-width="1"/>
+    <rect x="154" y="0" width="24" height="60" rx="2" fill="#1a1a1a" stroke="#000" stroke-width="1"/>
+    <rect x="196" y="0" width="24" height="60" rx="2" fill="#1a1a1a" stroke="#000" stroke-width="1"/>
+    <rect x="238" y="0" width="24" height="60" rx="2" fill="#7a3018" stroke="#5a2010" stroke-width="1"/>
+    <rect x="322" y="0" width="24" height="60" rx="2" fill="#1a1a1a" stroke="#000" stroke-width="1"/>
+    <rect x="364" y="0" width="24" height="60" rx="2" fill="#1a1a1a" stroke="#000" stroke-width="1"/>
+    <rect x="448" y="0" width="24" height="60" rx="2" fill="#1a1a1a" stroke="#000" stroke-width="1"/>
+  </g>
+
+  <!-- Play prompt -->
+  <text x="600" y="580" text-anchor="middle" font-family="Georgia, serif" font-size="16" fill="#6a5a3a" letter-spacing="6">
+    PLAY WITH YOUR KEYBOARD
+  </text>
+</svg>
