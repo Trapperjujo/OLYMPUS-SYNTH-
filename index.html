@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OLYMPUS SYNTH — Divine Sound Forge</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cinzel+Decorative:wght@400;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Cinzel',Georgia,'Times New Roman',serif;background:#080604;color:#c4b48a;min-height:100vh;overflow-x:hidden}
+#overlay{position:fixed;inset:0;z-index:9999;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;
+  background:radial-gradient(ellipse at 50% 40%,#1a1020 0%,#060208 70%,#000 100%)}
+#overlay h2{font-family:'Cinzel Decorative',serif;font-size:2.2em;letter-spacing:8px;
+  background:linear-gradient(180deg,#ffe4a0,#c4a35a,#8a6a2a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:glow-pulse 3s infinite}
+#overlay p{font-size:.85em;color:#8a7a5a;letter-spacing:4px}
+#overlay.hidden{display:none}
+#synth{max-width:1260px;margin:0 auto;padding:8px;display:none}
+#synth.visible{display:block}
+
+/* ─── Header ─── */
+header{text-align:center;padding:12px 40px;position:relative;
+  background:linear-gradient(180deg,#1e140a,#120c06);
+  border:3px solid #c4a35a;border-bottom:none}
+header::before,header::after{content:'';position:absolute;top:0;bottom:0;width:28px;
+  background:repeating-linear-gradient(90deg,#c4a35a22 0px,#c4a35a44 2px,transparent 2px,transparent 6px)}
+header::before{left:0}header::after{right:0}
+header h1{font-family:'Cinzel Decorative',serif;font-size:1.8em;letter-spacing:6px;
+  background:linear-gradient(180deg,#ffe4a0,#c4a35a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+header .sub{font-size:.65em;color:#7a6a4a;letter-spacing:8px;margin-top:2px}
+
+/* ─── Meander border ─── */
+.meander{height:14px;border-left:3px solid #c4a35a;border-right:3px solid #c4a35a;
+  background:
+    repeating-linear-gradient(90deg,#c4a35a 0 6px,transparent 6px 10px,#c4a35a 10px 12px,transparent 12px 20px),
+    repeating-linear-gradient(180deg,#c4a35a 0 3px,transparent 3px 6px,#c4a35a 6px 8px,transparent 8px 14px);
+  background-size:20px 14px}
+
+/* ─── Panels ─── */
+#panels{display:flex;border:3px solid #c4a35a;border-top:none;border-bottom:none}
+@media(max-width:760px){#panels{flex-direction:column}}
+.panel{flex:1;padding:14px 16px;min-width:0}
+
+/* Divine (left) — marble, gold, angelic */
+#divine{
+  background:
+    radial-gradient(ellipse at 30% 20%,rgba(255,240,200,.07),transparent 60%),
+    radial-gradient(ellipse at 70% 80%,rgba(200,180,140,.04),transparent 50%),
+    linear-gradient(135deg,rgba(255,248,230,.06),rgba(196,163,90,.03)),
+    linear-gradient(180deg,#14100a,#0c0a06);
+  border-right:2px solid #c4a35a33}
+#infernal{
+  background:
+    radial-gradient(ellipse at 70% 20%,rgba(200,40,10,.08),transparent 60%),
+    radial-gradient(ellipse at 30% 80%,rgba(140,20,5,.05),transparent 50%),
+    linear-gradient(135deg,rgba(180,40,20,.05),rgba(120,20,10,.02)),
+    linear-gradient(180deg,#140806,#0c0604)}
+
+.panel-title{text-align:center;font-family:'Cinzel Decorative',serif;font-size:.95em;letter-spacing:4px;
+  margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #c4a35a33}
+#divine .panel-title{color:#ffe4a0;animation:glow-pulse 3s infinite}
+#infernal .panel-title{color:#ff6a4a;animation:fire-pulse 2s infinite}
+
+/* ─── Sections ─── */
+.section{margin-bottom:10px;padding:10px;border:1px solid #c4a35a28;border-radius:4px;background:rgba(0,0,0,.25)}
+.section-title{font-size:.62em;letter-spacing:3px;margin-bottom:7px;text-transform:uppercase}
+#divine .section-title{color:#a09060}
+#infernal .section{border-color:#6a1a0a28}
+#infernal .section-title{color:#b06040}
+
+/* ─── Controls ─── */
+.ctrl{display:flex;align-items:center;gap:8px;margin:5px 0}
+.ctrl label{font-size:.58em;letter-spacing:2px;min-width:52px;text-transform:uppercase;color:#9a8a6a}
+.ctrl .v{font-size:.55em;min-width:40px;text-align:right;font-family:'Courier New',monospace;color:#c4a35a}
+#infernal .ctrl label{color:#a06a4a}
+#infernal .ctrl .v{color:#e07040}
+
+/* ─── Sliders ─── */
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:5px;border-radius:3px;outline:none;cursor:pointer;background:#1a1408}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;cursor:pointer}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;border:none;cursor:pointer}
+input[type=range]::-moz-range-track{height:5px;border-radius:3px}
+#divine input[type=range]{background:linear-gradient(90deg,#1a1408,#c4a35a44)}
+#divine input[type=range]::-webkit-slider-thumb{background:radial-gradient(circle,#ffe4a0,#c4a35a);box-shadow:0 0 6px #c4a35a88}
+#divine input[type=range]::-moz-range-thumb{background:radial-gradient(circle,#ffe4a0,#c4a35a);box-shadow:0 0 6px #c4a35a88}
+#infernal input[type=range]{background:linear-gradient(90deg,#1a0808,#8a2a1a44)}
+#infernal input[type=range]::-webkit-slider-thumb{background:radial-gradient(circle,#ff8a6a,#aa2a0a);box-shadow:0 0 6px #ff2a0a88}
+#infernal input[type=range]::-moz-range-thumb{background:radial-gradient(circle,#ff8a6a,#aa2a0a);box-shadow:0 0 6px #ff2a0a88}
+
+/* ─── Button groups ─── */
+.bg{display:flex;gap:4px;margin:5px 0}
+.bg button{flex:1;padding:5px 2px;border-radius:3px;font-family:'Cinzel',serif;font-size:.56em;letter-spacing:1px;cursor:pointer;transition:all .12s}
+#divine .bg button{background:#1a1408;color:#908060;border:1px solid #c4a35a44}
+#divine .bg button.active{background:#c4a35a33;color:#ffe4a0;border-color:#c4a35a;box-shadow:0 0 8px #c4a35a44}
+#divine .bg button:hover{border-color:#c4a35a88;color:#c4a35a}
+#infernal .bg button{background:#1a0808;color:#906050;border:1px solid #6a1a0a44}
+#infernal .bg button.active{background:#8a2a1a33;color:#ff8a6a;border-color:#aa2a0a;box-shadow:0 0 8px #ff2a0a44}
+#infernal .bg button:hover{border-color:#aa2a0a88;color:#ff6a4a}
+
+/* ─── Keyboard area ─── */
+#kb-area{border:3px solid #c4a35a;border-top:none;
+  background:linear-gradient(180deg,#14100a,#0a0806);padding:10px 14px 14px}
+#kb-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:.6em;color:#7a6a4a;letter-spacing:2px;flex-wrap:wrap;gap:6px}
+.oct-ctrl{display:flex;align-items:center;gap:8px}
+.oct-ctrl button{background:#c4a35a33;color:#c4a35a;border:1px solid #c4a35a;border-radius:3px;padding:1px 10px;font-family:'Cinzel',serif;cursor:pointer;font-size:1em}
+.oct-ctrl button:hover{background:#c4a35a55}
+#keyboard{position:relative;height:150px;background:#0a0806;border-radius:0 0 4px 4px;overflow:hidden;margin-top:4px}
+
+/* Keys */
+.key{position:absolute;top:0;border-radius:0 0 4px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:4px;transition:background .04s;user-select:none}
+.key.white{height:100%;z-index:1;
+  background:linear-gradient(180deg,#f5f0e8 0%,#eae2d4 70%,#ddd4c4 100%);
+  border:1px solid #b0a890;border-top:none}
+.key.white:hover,.key.white.pressed{
+  background:linear-gradient(180deg,#ffe8a0,#f0d880 70%,#e0c860 100%)}
+.key.black{height:58%;z-index:2;
+  background:linear-gradient(180deg,#2a2a2a 0%,#141414 70%,#080808 100%);
+  border:1px solid #000;border-top:none}
+.key.black:hover,.key.black.pressed{
+  background:linear-gradient(180deg,#7a3018,#5a2010 70%,#3a1008 100%)}
+.key .nl{font-size:7px;color:#888;font-family:'Cinzel',serif;pointer-events:none}
+.key.black .nl{color:#666}
+.key .sc{font-size:7px;color:#aaa;font-family:'Courier New',monospace;margin-bottom:1px;pointer-events:none}
+.key.black .sc{color:#888}
+
+/* ─── Footer ─── */
+#footer{border:3px solid #c4a35a;border-top:none;padding:6px 14px;background:#0a0806;
+  font-size:.55em;color:#5a4a30;text-align:center;letter-spacing:3px}
+
+/* ─── Animations ─── */
+@keyframes glow-pulse{0%,100%{text-shadow:0 0 10px #c4a35a44}50%{text-shadow:0 0 20px #c4a35a88,0 0 40px #c4a35a44}}
+@keyframes fire-pulse{0%,100%{text-shadow:0 0 10px #ff2a0a44}50%{text-shadow:0 0 20px #ff2a0a88,0 0 40px #ff0a0044}}
+
+/* ─── Decorative side columns ─── */
+.col-l,.col-r{position:fixed;top:0;bottom:0;width:18px;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(90deg,#c4a35a08 0px,#c4a35a18 2px,transparent 2px,transparent 6px)}
+.col-l{left:0}.col-r{right:0}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:7px}::-webkit-scrollbar-track{background:#0a0a0a}::-webkit-scrollbar-thumb{background:#c4a35a33;border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- Startup overlay -->
+<div id="overlay">
+  <h2>OLYMPUS SYNTH</h2>
+  <p>CLICK TO AWAKEN THE GODS</p>
+</div>
+
+<!-- Decorative columns -->
+<div class="col-l"></div><div class="col-r"></div>
+
+<div id="synth">
+  <header>
+    <h1>⚡ OLYMPUS SYNTH ⚡</h1>
+    <div class="sub">DIVINE SOUND FORGE</div>
+  </header>
+  <div class="meander"></div>
+
+  <div id="panels">
+    <!-- ════ DIVINE / ANGELIC SIDE ════ -->
+    <div id="divine" class="panel">
+      <div class="panel-title">☀ DIVINE REALM ☀</div>
+
+      <!-- Oscillator -->
+      <div class="section">
+        <div class="section-title">⟐ OSCILLATOR ⟐</div>
+        <div class="bg" id="wave-bg">
+          <button data-w="sine" class="active">SINE</button>
+          <button data-w="triangle">TRI</button>
+          <button data-w="sawtooth">SAW</button>
+          <button data-w="square">SQR</button>
+        </div>
+        <div class="ctrl"><label>Detune</label><input type="range" id="detune" min="-100" max="100" value="0"><span class="v" id="vDetune">0 ct</span></div>
+      </div>
+
+      <!-- Amp Envelope -->
+      <div class="section">
+        <div class="section-title">⟐ AMPLITUDE ENVELOPE ⟐</div>
+        <div class="ctrl"><label>Attack</label><input type="range" id="ampA" min="1" max="2000" value="10"><span class="v" id="vAmpA">10 ms</span></div>
+        <div class="ctrl"><label>Decay</label><input type="range" id="ampD" min="1" max="2000" value="100"><span class="v" id="vAmpD">100 ms</span></div>
+        <div class="ctrl"><label>Sustain</label><input type="range" id="ampS" min="0" max="100" value="70"><span class="v" id="vAmpS">70%</span></div>
+        <div class="ctrl"><label>Release</label><input type="range" id="ampR" min="1" max="3000" value="300"><span class="v" id="vAmpR">300 ms</span></div>
+      </div>
+
+      <!-- LFO -->
+      <div class="section">
+        <div class="section-title">⟐ LFO MODULATION ⟐</div>
+        <div class="ctrl"><label>Rate</label><input type="range" id="lfoRate" min="1" max="200" value="20"><span class="v" id="vLfoRate">2.0 Hz</span></div>
+        <div class="ctrl"><label>Depth</label><input type="range" id="lfoDepth" min="0" max="100" value="0"><span class="v" id="vLfoDepth">0</span></div>
+        <div class="bg" id="lfo-wave-bg">
+          <button data-w="sine" class="active">SIN</button>
+          <button data-w="triangle">TRI</button>
+          <button data-w="sawtooth">SAW</button>
+          <button data-w="square">SQR</button>
+        </div>
+        <div class="bg" id="lfo-tgt-bg">
+          <button data-t="none" class="active">OFF</button>
+          <button data-t="pitch">PITCH</button>
+          <button data-t="filter">FILTER</button>
+          <button data-t="amp">AMP</button>
+        </div>
+      </div>
+
+      <!-- Master -->
+      <div class="section">
+        <div class="section-title">⟐ MASTER ⟐</div>
+        <div class="ctrl"><label>Volume</label><input type="range" id="masterVol" min="0" max="100" value="70"><span class="v" id="vMasterVol">70%</span></div>
+      </div>
+    </div>
+
+    <!-- ════ INFERNAL / DEVILISH SIDE ════ -->
+    <div id="infernal" class="panel">
+      <div class="panel-title">☠ INFERNAL REALM ☠</div>
+
+      <!-- Filter -->
+      <div class="section">
+        <div class="section-title">⟐ FILTER ⟐</div>
+        <div class="bg" id="filt-bg">
+          <button data-f="lowpass" class="active">LOWPASS</button>
+          <button data-f="highpass">HIPASS</button>
+          <button data-f="bandpass">BAND</button>
+        </div>
+        <div class="ctrl"><label>Cutoff</label><input type="range" id="cutoff" min="20" max="20000" value="5000"><span class="v" id="vCutoff">5.0 kHz</span></div>
+        <div class="ctrl"><label>Reso</label><input type="range" id="reso" min="0" max="300" value="10"><span class="v" id="vReso">1.0</span></div>
+      </div>
+
+      <!-- Filter Envelope -->
+      <div class="section">
+        <div class="section-title">⟐ FILTER ENVELOPE (VCF) ⟐</div>
+        <div class="ctrl"><label>Attack</label><input type="range" id="fltA" min="1" max="2000" value="10"><span class="v" id="vFltA">10 ms</span></div>
+        <div class="ctrl"><label>Decay</label><input type="range" id="fltD" min="1" max="2000" value="200"><span class="v" id="vFltD">200 ms</span></div>
+        <div class="ctrl"><label>Sustain</label><input type="range" id="fltS" min="0" max="100" value="50"><span class="v" id="vFltS">50%</span></div>
+        <div class="ctrl"><label>Release</label><input type="range" id="fltR" min="1" max="3000" value="300"><span class="v" id="vFltR">300 ms</span></div>
+        <div class="ctrl"><label>Amount</label><input type="range" id="fltAmt" min="-5000" max="5000" value="2000"><span class="v" id="vFltAmt">+2.0 kHz</span></div>
+      </div>
+
+      <!-- Effects -->
+      <div class="section">
+        <div class="section-title">⟐ EFFECTS ⟐</div>
+        <div class="ctrl"><label>Reverb</label><input type="range" id="reverb" min="0" max="100" value="20"><span class="v" id="vReverb">20%</span></div>
+        <div class="ctrl"><label>Delay</label><input type="range" id="dlyMix" min="0" max="100" value="0"><span class="v" id="vDlyMix">0%</span></div>
+        <div class="ctrl"><label>DlyTime</label><input type="range" id="dlyTime" min="50" max="1000" value="300"><span class="v" id="vDlyTime">300 ms</span></div>
+        <div class="ctrl"><label>Feedbk</label><input type="range" id="dlyFb" min="0" max="90" value="30"><span class="v" id="vDlyFb">30%</span></div>
+      </div>
+
+      <!-- MIDI CC Info -->
+      <div class="section">
+        <div class="section-title">⟐ MIDI CC INFO ⟐</div>
+        <div style="font-size:.6em;color:#906a4a;padding:2px 4px;line-height:1.6">
+          <div>Control: <span id="ccName" style="color:#e08050">--</span></div>
+          <div>Value: <span id="ccVal" style="color:#e08050">--</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="meander"></div>
+
+  <!-- Keyboard -->
+  <div id="kb-area">
+    <div id="kb-info">
+      <span>Keys: Z–M (lower octave) &nbsp; Q–U (upper) &nbsp; | &nbsp; Octave: ← →</span>
+      <div class="oct-ctrl">
+        <button id="octDn">◄</button>
+        <span id="octDisp">C2 – C4</span>
+        <button id="octUp">►</button>
+      </div>
+    </div>
+    <div id="keyboard"></div>
+  </div>
+
+  <div id="footer">⟐ FORGED IN THE FIRES OF OLYMPUS ⟐ WEB AUDIO SYNTHESIZER ⟐ 49 KEYS ⟐</div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+//  OLYMPUS SYNTH — Audio Engine
+// ══════════════════════════════════════
+const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const BLACK_SET  = new Set([1,3,6,8,10]);
+const BASE_MIDI  = 36; // C2
+const TOP_MIDI   = 84; // C6
+
+// Synth state
+const P = {
+  wave:'sine', detune:0,
+  fType:'lowpass', cutoff:5000, reso:1,
+  aEnv:{a:.01,d:.1,s:.7,r:.3},
+  fEnv:{a:.01,d:.2,s:.5,r:.3,amt:2000},
+  lfo:{rate:2,depth:0,wave:'sine',target:'none'},
+  reverb:.2, dlyMix:0, dlyTime:.3, dlyFb:.3,
+  vol:.7, octShift:0
+};
+
+// Computer keyboard → semitone offset from current octave base
+const KBD = {
+  'z':0,'s':1,'x':2,'d':3,'c':4,'v':5,'g':6,'b':7,'h':8,'n':9,'j':10,'m':11,
+  'q':12,'2':13,'w':14,'3':15,'e':16,'r':17,'5':18,'t':19,'6':20,'y':21,'7':22,'u':23,
+  'i':24
+};
+
+let ctx, masterGain, dryGain, revConv, revGain, dlyNode, dlyFb, dlyGain;
+let lfo, lfoPitch, lfoFilt, lfoAmp;
+const voices = new Map();
+const held   = new Set();
+
+// ─── Init Audio ───
+function initAudio(){
+  ctx = new (window.AudioContext||window.webkitAudioContext)();
+
+  masterGain = ctx.createGain();
+  masterGain.gain.value = P.vol;
+  masterGain.connect(ctx.destination);
+
+  dryGain = ctx.createGain();
+  dryGain.gain.value = 1;
+  dryGain.connect(masterGain);
+
+  // Reverb (convolver with generated impulse)
+  revConv = ctx.createConvolver();
+  revConv.buffer = makeIR(2.5,3);
+  revGain = ctx.createGain();
+  revGain.gain.value = P.reverb;
+  revConv.connect(revGain);
+  revGain.connect(masterGain);
+
+  // Delay
+  dlyNode = ctx.createDelay(2);
+  dlyNode.delayTime.value = P.dlyTime;
+  dlyFb = ctx.createGain();
+  dlyFb.gain.value = P.dlyFb;
+  dlyGain = ctx.createGain();
+  dlyGain.gain.value = P.dlyMix;
+  dlyNode.connect(dlyFb);
+  dlyFb.connect(dlyNode);
+  dlyNode.connect(dlyGain);
+  dlyGain.connect(masterGain);
+
+  // LFO
+  lfo = ctx.createOscillator();
+  lfo.type = P.lfo.wave;
+  lfo.frequency.value = P.lfo.rate;
+  lfoPitch = ctx.createGain(); lfoPitch.gain.value = 0;
+  lfoFilt  = ctx.createGain(); lfoFilt.gain.value  = 0;
+  lfoAmp   = ctx.createGain(); lfoAmp.gain.value   = 0;
+  lfo.connect(lfoPitch);
+  lfo.connect(lfoFilt);
+  lfo.connect(lfoAmp);
+  lfo.start();
+  refreshLFO();
+}
+
+function makeIR(dur,decay){
+  const len = ctx.sampleRate * dur;
+  const buf = ctx.createBuffer(2, len, ctx.sampleRate);
+  for(let c=0;c<2;c++){
+    const d = buf.getChannelData(c);
+    for(let i=0;i<len;i++) d[i] = (Math.random()*2-1)*Math.pow(1-i/len, decay);
+  }
+  return buf;
+}
+
+function midiFreq(m){ return 440*Math.pow(2,(m-69)/12); }
+
+// ─── Note On / Off ───
+function noteOn(midi){
+  if(!ctx || voices.has(midi)) return;
+  const t = ctx.currentTime, f = midiFreq(midi);
+
+  const osc = ctx.createOscillator();
+  const flt = ctx.createBiquadFilter();
+  const vca = ctx.createGain();
+
+  osc.type = P.wave;
+  osc.frequency.setValueAtTime(f, t);
+  osc.detune.setValueAtTime(P.detune, t);
+
+  flt.type = P.fType;
+  flt.frequency.setValueAtTime(P.cutoff, t);
+  flt.Q.setValueAtTime(P.reso, t);
+
+  osc.connect(flt); flt.connect(vca);
+  vca.connect(dryGain);
+  vca.connect(revConv);
+  vca.connect(dlyNode);
+
+  // LFO routing
+  if(P.lfo.target==='pitch')  lfoPitch.connect(osc.detune);
+  if(P.lfo.target==='filter') lfoFilt.connect(flt.frequency);
+  if(P.lfo.target==='amp')    lfoAmp.connect(vca.gain);
+
+  // Amp envelope
+  const ae = P.aEnv;
+  vca.gain.setValueAtTime(.001, t);
+  vca.gain.exponentialRampToValueAtTime(.8, t+ae.a);
+  vca.gain.exponentialRampToValueAtTime(Math.max(ae.s*.8,.001), t+ae.a+ae.d);
+
+  // Filter envelope
+  const fe = P.fEnv, base = P.cutoff;
+  const peak = Math.max(20, Math.min(20000, base+fe.amt));
+  const sus  = Math.max(20, Math.min(20000, base+fe.amt*fe.s));
+  flt.frequency.setValueAtTime(base, t);
+  flt.frequency.linearRampToValueAtTime(peak, t+fe.a);
+  flt.frequency.linearRampToValueAtTime(sus,  t+fe.a+fe.d);
+
+  osc.start(t);
+  voices.set(midi, {osc,flt,vca});
+  hlKey(midi, true);
+  showCC('Note On', 'MIDI '+midi+' ('+NOTE_NAMES[midi%12]+Math.floor(midi/12-1)+')');
+}
+
+function noteOff(midi){
+  const v = voices.get(midi);
+  if(!v) return;
+  const t = ctx.currentTime;
+
+  v.vca.gain.cancelScheduledValues(t);
+  v.vca.gain.setValueAtTime(v.vca.gain.value, t);
+  v.vca.gain.exponentialRampToValueAtTime(.001, t+P.aEnv.r);
+
+  v.flt.frequency.cancelScheduledValues(t);
+  v.flt.frequency.setValueAtTime(v.flt.frequency.value, t);
+  v.flt.frequency.linearRampToValueAtTime(P.cutoff, t+P.fEnv.r);
+
+  v.osc.stop(t+P.aEnv.r+.05);
+  voices.delete(midi);
+  hlKey(midi, false);
+}
+
+function refreshLFO(){
+  if(!lfo) return;
+  lfo.type = P.lfo.wave;
+  lfo.frequency.setValueAtTime(P.lfo.rate, ctx.currentTime);
+  lfoPitch.gain.value = 0;
+  lfoFilt.gain.value  = 0;
+  lfoAmp.gain.value   = 0;
+  const d = P.lfo.depth;
+  if(P.lfo.target==='pitch')  lfoPitch.gain.value = d*50;
+  if(P.lfo.target==='filter') lfoFilt.gain.value  = d*2000;
+  if(P.lfo.target==='amp')    lfoAmp.gain.value   = d*.5;
+}
+
+// ─── Keyboard rendering ───
+function buildKB(){
+  const kb = document.getElementById('keyboard');
+  kb.innerHTML = '';
+  const totalWhite = 29;
+  const wPct = 100/totalWhite;
+  let wi = 0;
+  for(let m=BASE_MIDI; m<=TOP_MIDI; m++){
+    const n = m%12, blk = BLACK_SET.has(n);
+    const el = document.createElement('div');
+    el.className = 'key '+(blk?'black':'white');
+    el.dataset.midi = m;
+    if(blk){
+      el.style.left = (wi*wPct - wPct*.3)+'%';
+      el.style.width = (wPct*.58)+'%';
+    } else {
+      el.style.left = (wi*wPct)+'%';
+      el.style.width = (wPct*.97)+'%';
+      wi++;
+    }
+    // shortcut label
+    const sc = shortcutFor(m);
+    if(sc){
+      const s = document.createElement('span');
+      s.className='sc'; s.textContent=sc.toUpperCase();
+      el.appendChild(s);
+    }
+    // note name
+    const nl = document.createElement('span');
+    nl.className='nl';
+    nl.textContent = NOTE_NAMES[n]+Math.floor(m/12-1);
+    el.appendChild(nl);
+    // events
+    el.addEventListener('mousedown', e=>{e.preventDefault();noteOn(m)});
+    el.addEventListener('mouseup', ()=>noteOff(m));
+    el.addEventListener('mouseleave', ()=>{if(!held.has(shortcutFor(m))) noteOff(m)});
+    el.addEventListener('touchstart', e=>{e.preventDefault();noteOn(m)},{passive:false});
+    el.addEventListener('touchend', ()=>noteOff(m));
+    kb.appendChild(el);
+  }
+}
+
+function shortcutFor(midi){
+  const off = midi - (BASE_MIDI + P.octShift);
+  for(const [k,v] of Object.entries(KBD)){ if(v===off) return k; }
+  return null;
+}
+
+function hlKey(midi, on){
+  const el = document.querySelector('.key[data-midi="'+midi+'"]');
+  if(el){ if(on) el.classList.add('pressed'); else el.classList.remove('pressed'); }
+}
+
+function shiftOct(amt){
+  P.octShift = Math.max(-24, Math.min(24, P.octShift+amt));
+  const lo = BASE_MIDI + P.octShift;
+  const hi = lo + 24;
+  document.getElementById('octDisp').textContent =
+    NOTE_NAMES[lo%12]+Math.floor(lo/12-1)+' – '+NOTE_NAMES[hi%12]+Math.floor(hi/12-1);
+  buildKB();
+}
+
+function showCC(n,v){
+  document.getElementById('ccName').textContent = n;
+  document.getElementById('ccVal').textContent  = v;
+}
+
+// ─── Control bindings ───
+function bind(id, fn){ const e=document.getElementById(id); if(e) e.addEventListener('input',()=>fn(+e.value)); }
+function bindBtns(gid, attr, fn){
+  document.querySelectorAll('#'+gid+' button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('#'+gid+' button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      fn(b.getAttribute(attr));
+    });
+  });
+}
+
+function setupControls(){
+  // Oscillator
+  bindBtns('wave-bg','data-w',w=>{P.wave=w; voices.forEach(v=>v.osc.type=w); showCC('Waveform',w)});
+  bind('detune',v=>{P.detune=v; voices.forEach(x=>{if(ctx)x.osc.detune.setValueAtTime(v,ctx.currentTime)}); document.getElementById('vDetune').textContent=v+' ct'; showCC('CC#94 Detune',v)});
+
+  // Amp Env
+  bind('ampA',v=>{P.aEnv.a=v/1000; document.getElementById('vAmpA').textContent=v+' ms'; showCC('CC#73 Attack',v)});
+  bind('ampD',v=>{P.aEnv.d=v/1000; document.getElementById('vAmpD').textContent=v+' ms'; showCC('CC#75 Decay',v)});
+  bind('ampS',v=>{P.aEnv.s=v/100;  document.getElementById('vAmpS').textContent=v+'%';   showCC('CC#79 Sustain',v)});
+  bind('ampR',v=>{P.aEnv.r=v/1000; document.getElementById('vAmpR').textContent=v+' ms'; showCC('CC#72 Release',v)});
+
+  // LFO
+  bind('lfoRate', v=>{P.lfo.rate=v/10; refreshLFO(); document.getElementById('vLfoRate').textContent=(v/10).toFixed(1)+' Hz'});
+  bind('lfoDepth',v=>{P.lfo.depth=v/100; refreshLFO(); document.getElementById('vLfoDepth').textContent=v; showCC('CC#1 Mod Wheel',v)});
+  bindBtns('lfo-wave-bg','data-w',w=>{P.lfo.wave=w; refreshLFO()});
+  bindBtns('lfo-tgt-bg','data-t',t=>{P.lfo.target=t; refreshLFO()});
+
+  // Master
+  bind('masterVol',v=>{P.vol=v/100; if(masterGain)masterGain.gain.setValueAtTime(v/100,ctx.currentTime); document.getElementById('vMasterVol').textContent=v+'%'; showCC('CC#7 Volume',v)});
+
+  // Filter
+  bindBtns('filt-bg','data-f',f=>{P.fType=f; voices.forEach(v=>v.flt.type=f); showCC('Filter Type',f)});
+  bind('cutoff',v=>{P.cutoff=v; voices.forEach(x=>{if(ctx)x.flt.frequency.setValueAtTime(v,ctx.currentTime)});
+    document.getElementById('vCutoff').textContent=v>=1000?(v/1000).toFixed(1)+' kHz':v+' Hz'; showCC('CC#74 Cutoff',v)});
+  bind('reso',v=>{P.reso=v/10; voices.forEach(x=>{if(ctx)x.flt.Q.setValueAtTime(v/10,ctx.currentTime)});
+    document.getElementById('vReso').textContent=(v/10).toFixed(1); showCC('CC#71 Resonance',(v/10).toFixed(1))});
+
+  // Filter Env
+  bind('fltA',  v=>{P.fEnv.a=v/1000;  document.getElementById('vFltA').textContent=v+' ms'});
+  bind('fltD',  v=>{P.fEnv.d=v/1000;  document.getElementById('vFltD').textContent=v+' ms'});
+  bind('fltS',  v=>{P.fEnv.s=v/100;   document.getElementById('vFltS').textContent=v+'%'});
+  bind('fltR',  v=>{P.fEnv.r=v/1000;  document.getElementById('vFltR').textContent=v+' ms'});
+  bind('fltAmt',v=>{P.fEnv.amt=v; document.getElementById('vFltAmt').textContent=
+    (Math.abs(v)>=1000?(v/1000).toFixed(1)+' kHz':(v>0?'+':'')+v+' Hz')});
+
+  // Effects
+  bind('reverb',v=>{P.reverb=v/100; if(revGain)revGain.gain.setValueAtTime(v/100,ctx.currentTime); document.getElementById('vReverb').textContent=v+'%'; showCC('CC#91 Reverb',v)});
+  bind('dlyMix',v=>{P.dlyMix=v/100; if(dlyGain)dlyGain.gain.setValueAtTime(v/100,ctx.currentTime); document.getElementById('vDlyMix').textContent=v+'%'});
+  bind('dlyTime',v=>{P.dlyTime=v/1000; if(dlyNode)dlyNode.delayTime.setValueAtTime(v/1000,ctx.currentTime); document.getElementById('vDlyTime').textContent=v+' ms'});
+  bind('dlyFb',v=>{P.dlyFb=v/100; if(dlyFb)dlyFb.gain.setValueAtTime(v/100,ctx.currentTime); document.getElementById('vDlyFb').textContent=v+'%'});
+
+  // Octave buttons
+  document.getElementById('octDn').addEventListener('click',()=>shiftOct(-12));
+  document.getElementById('octUp').addEventListener('click',()=>shiftOct(12));
+}
+
+// ─── Keyboard events ───
+document.addEventListener('keydown',e=>{
+  if(e.repeat||e.target.tagName==='INPUT') return;
+  const k = e.key.toLowerCase();
+  if(k==='arrowleft'){shiftOct(-12);return}
+  if(k==='arrowright'){shiftOct(12);return}
+  if(KBD.hasOwnProperty(k)){
+    const midi = BASE_MIDI + P.octShift + KBD[k];
+    if(midi>=0&&midi<=127){ held.add(k); noteOn(midi); }
+  }
+});
+document.addEventListener('keyup',e=>{
+  const k = e.key.toLowerCase();
+  if(KBD.hasOwnProperty(k)&&held.has(k)){
+    const midi = BASE_MIDI + P.octShift + KBD[k];
+    held.delete(k); noteOff(midi);
+  }
+});
+
+// ─── Init ───
+document.getElementById('overlay').addEventListener('click',()=>{
+  initAudio();
+  document.getElementById('overlay').classList.add('hidden');
+  document.getElementById('synth').classList.add('visible');
+});
+buildKB();
+setupControls();
+window.addEventListener('resize',buildKB);
+</script>
+</body>
+</html>
